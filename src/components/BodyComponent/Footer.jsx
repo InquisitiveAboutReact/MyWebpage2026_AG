@@ -4,6 +4,7 @@ import {useStyles} from './BodyStyle';
 import CodeIcon from '@material-ui/icons/Code';
 import ProfileVisit from './ProfileVisit';
 
+
 function Footer() {
 
    const classes = useStyles();
@@ -19,6 +20,8 @@ function Footer() {
         </Typography>
        </Box>
     )
+    
 }
+
 
 export default Footer

@@ -63,7 +63,7 @@ function App() {
 
         <div className="hero-grid">
           <div>
-            <p className="intro-tag">Technical Delivery Leader & Digital Builder</p>
+            <p className="intro-tag">Technical Delivery Leader | Enterprise AI & Digital Builder</p>
             <h1>
               Making complex<br />
               <em>work beautifully</em><br />
@@ -157,7 +157,10 @@ function App() {
               I’m exploring thoughtful ways to make delivery teams sharper: clearer signals, less manual overhead, and more time for the decisions that need humans.
             </p>
             <a className="btn-secondary" href="https://www.salesforce.com/trailblazer/rajachatterjee2024" target="_blank" rel="noreferrer">
-              Explore my AI learning path <Arrow />
+              Explore my learning path into Salesforce <Arrow />
+            </a>
+             <a className="btn-secondary" href="#certifications">
+              Explore my learning path into Oracle HCM & OIC Enterprise AI <Arrow />
             </a>
           </div>
 

@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 export default function CVModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('preview'); // 'preview' | 'upload'
   const [cvUrl, setCvUrl] = useState(process.env.PUBLIC_URL + '/Raja_Chatterjee_CV.pdf');
+  const [pinVerified, setPinVerified] = useState(false);
+  const [pinInput, setPinInput] = useState('');
+  const ADMIN_PIN = '7890'; // Admin protection PIN
   const [uploadedFileName, setUploadedFileName] = useState('');
   const [uploadStatus, setUploadStatus] = useState('');
 
@@ -81,8 +84,21 @@ export default function CVModal({ isOpen, onClose }) {
             <span>👁</span> View CV Preview
           </button>
           <button 
-            className={`tab-btn ${activeTab === 'upload' ? 'active' : ''}`}
-            onClick={() => setActiveTab('upload')}
+            className="tab-btn"
+            onClick={() => {
+              if (!pinVerified) {
+                // Prompt for PIN before switching to upload tab
+                const userPin = prompt('Enter admin PIN to upload CV:');
+                if (userPin === ADMIN_PIN) {
+                  setPinVerified(true);
+                  setActiveTab('upload');
+                } else {
+                  alert('Incorrect PIN. Access denied.');
+                }
+              } else {
+                setActiveTab('upload');
+              }
+            }}
           >
             <span>⚙</span> Admin: Upload Latest CV
           </button>
@@ -90,58 +106,84 @@ export default function CVModal({ isOpen, onClose }) {
 
         {/* Tab Body */}
         <div className="cv-modal-content">
-          {activeTab === 'preview' ? (
-            <div className="cv-iframe-container">
-              <iframe 
-                src={cvUrl} 
-                title="Raja Chatterjee CV Preview" 
-                width="100%" 
-                height="100%"
+          {activeTab === 'upload' && !pinVerified ? (
+            <div className="pin-prompt-container">
+              <h3>Admin Access Required</h3>
+              <input
+                type="password"
+                placeholder="Enter PIN"
+                value={pinInput}
+                onChange={(e) => setPinInput(e.target.value)}
+                className="pin-input"
               />
+              <button
+                className="pin-verify-btn"
+                onClick={() => {
+                  if (pinInput === ADMIN_PIN) {
+                    setPinVerified(true);
+                  } else {
+                    setUploadStatus('Incorrect PIN');
+                  }
+                }}
+              >
+                Verify PIN
+              </button>
+              {uploadStatus && <div className="upload-status-msg">{uploadStatus}</div>}
             </div>
           ) : (
-            <div className="cv-upload-panel">
-              <div className="upload-box">
-                <div className="upload-icon">📁</div>
-                <h4>Upload New Curriculum Vitae</h4>
-                <p>Select a modern PDF document to test and update the active CV for recruiters instantly.</p>
-
-                <input 
-                  type="file" 
-                  accept="application/pdf" 
-                  id="cv-file-input" 
-                  onChange={handleFileUpload}
-                  style={{ display: 'none' }}
+            activeTab === 'preview' ? (
+              <div className="cv-iframe-container">
+                <iframe 
+                  src={cvUrl} 
+                  title="Raja Chatterjee CV Preview" 
+                  width="100%" 
+                  height="100%"
                 />
-                <label htmlFor="cv-file-input" className="file-select-label">
-                  Choose PDF File
-                </label>
-
-                {uploadedFileName && (
-                  <div className="current-file-badge">
-                    <span>Active File:</span> <strong>{uploadedFileName}</strong>
-                  </div>
-                )}
-
-                {uploadStatus && (
-                  <div className="upload-status-msg">{uploadStatus}</div>
-                )}
               </div>
+            ) : (
+              <div className="cv-upload-panel">
+                <div className="upload-box">
+                  <div className="upload-icon">📁</div>
+                  <h4>Upload New Curriculum Vitae</h4>
+                  <p>Select a modern PDF document to test and update the active CV for recruiters instantly.</p>
 
-              <div className="repo-sync-guide">
-                <h5>📌 Permanent Git Deployment Guide</h5>
-                <ol>
-                  <li>Save your updated CV as <code>Raja_Chatterjee_CV.pdf</code>.</li>
-                  <li>Replace the file at <code>public/Raja_Chatterjee_CV.pdf</code> in your project repository.</li>
-                  <li>Commit and push to GitHub (or run <code>yarn deploy</code>) to publish for all recruiters!</li>
-                </ol>
-                {uploadedFileName && (
-                  <button className="reset-default-btn" onClick={handleResetToDefault}>
-                    Restore Default Repo CV
-                  </button>
-                )}
+                  <input 
+                    type="file" 
+                    accept="application/pdf" 
+                    id="cv-file-input" 
+                    onChange={handleFileUpload}
+                    style={{ display: 'none' }}
+                  />
+                  <label htmlFor="cv-file-input" className="file-select-label">
+                    Choose PDF File
+                  </label>
+
+                  {uploadedFileName && (
+                    <div className="current-file-badge">
+                      <span>Active File:</span> <strong>{uploadedFileName}</strong>
+                    </div>
+                  )}
+
+                  {uploadStatus && (
+                    <div className="upload-status-msg">{uploadStatus}</div>
+                  )}
+                </div>
+
+                <div className="repo-sync-guide">
+                  <h5>📌 Permanent Git Deployment Guide</h5>
+                  <ol>
+                    <li>Save your updated CV as <code>Raja_Chatterjee_CV.pdf</code>.</li>
+                    <li>Replace the file at <code>public/Raja_Chatterjee_CV.pdf</code> in your project repository.</li>
+                    <li>Commit and push to GitHub (or run <code>yarn deploy</code>) to publish for all recruiters!</li>
+                  </ol>
+                  {uploadedFileName && (
+                    <button className="reset-default-btn" onClick={handleResetToDefault}>
+                      Restore Default Repo CV
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
+            )
           )}
         </div>
       </div>

@@ -29,7 +29,7 @@ const KNOWLEDGE_BASE = [
   {
     topic: "contact",
     keywords: ["contact", "email", "linkedin", "hire", "collaborate", "reach", "github", "connect"],
-    content: "You can reach out to Raja Chatterjee directly via:\n• Email: rajachatterjee84@gmail.com\n• LinkedIn: linkedin.com/in/rajachatterjee84/\n• GitHub: github.com/InquisitiveAboutReact\nHe is open for strategic collaborations and leadership roles."
+    content: "To contact Raja, please click on the below Linkedin & Github Link :-\n1. Linkedin = <a href=\"https://www.linkedin.com/in/rajachatterjee84/\" target=\"_blank\">LinkedIn</a>\n2. Github = <a href=\"https://github.com/InquisitiveAboutReact\" target=\"_blank\">Github</a>",
   },
   {
     topic: "cv",
@@ -48,7 +48,7 @@ function retrieveRAGResponse(query) {
     entry.keywords.forEach(kw => {
       if (lower.includes(kw)) score += 2;
     });
-    if (score > maxScore) {
+    if (score >= maxScore) {
       maxScore = score;
       bestMatch = entry;
     }
@@ -58,7 +58,12 @@ function retrieveRAGResponse(query) {
     return bestMatch.content;
   }
 
-  return "Raja Chatterjee is a Technical Delivery Leader with 18+ years of expertise in enterprise technology delivery, Oracle AI/HR/Payroll certifications, cloud architecture (Azure/Salesforce/React), and AI-driven team workflows. Feel free to ask about his experience, certifications, projects, or how to contact him!";
+  // Early return for contact queries to ensure correct info
+  if (lower.includes('contact')) {
+    const contactEntry = KNOWLEDGE_BASE.find(e => e.topic === 'contact');
+    if (contactEntry) return contactEntry.content;
+  }
+
 }
 
 export default function RAGChatbot() {
@@ -131,9 +136,13 @@ export default function RAGChatbot() {
             {messages.map(msg => (
               <div key={msg.id} className={`chat-bubble-row ${msg.sender}`}>
                 {msg.sender === 'assistant' && <div className="bot-avatar">✦</div>}
-                <div className="chat-bubble">
-                  <p style={{ whiteSpace: 'pre-line' }}>{msg.text}</p>
-                </div>
+            <div className="chat-bubble">
+              {msg.sender === 'assistant' && msg.text.includes('<a') ? (
+                <p style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: msg.text }} />
+              ) : (
+                <p style={{ whiteSpace: 'pre-line' }}>{msg.text}</p>
+              )}
+            </div>
               </div>
             ))}
             {isTyping && (
